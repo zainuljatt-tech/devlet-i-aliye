@@ -53,6 +53,12 @@ nav{
   border-bottom:1px solid rgba(212,175,55,0.18);
 }
 
+.nav-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
 .logo{
   display:flex;
   align-items:flex-start;
@@ -557,22 +563,41 @@ footer{
 @media(max-width:950px){
   nav{
     flex-direction:column;
-    gap:15px;
+    gap:0;
+    padding:12px 5%;
   }
 
-  nav ul{
-    display:none;
-    flex-direction:column;
-    gap:15px;
+  .nav-header{
     width:100%;
   }
 
   .menu-toggle{
     display:flex;
+    flex-shrink:0;
+  }
+
+  nav ul{
+    display:none;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+    padding:15px 0 5px;
   }
 
   nav ul.active{
     display:flex;
+  }
+
+  nav ul li a{
+    display:block;
+    padding:10px 12px;
+    font-size:1.05rem;
+    border-radius:8px;
+    transition:0.3s;
+  }
+
+  nav ul li a:active{
+    background:rgba(212,175,55,0.12);
   }
 
   .hero{
@@ -598,7 +623,8 @@ footer{
   }
 
   .logo h1{
-    text-align:center;
+    text-align:left;
+    font-size:0.78rem;
   }
 
   .contact button{
