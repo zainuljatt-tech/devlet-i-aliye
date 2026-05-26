@@ -1,6 +1,14 @@
 # Host your website (free)
 
-Your site is ready to publish. Use **Netlify Drop** (about 2 minutes, no coding).
+## Live site (GitHub Pages)
+
+**https://zainuljatt-tech.github.io/devlet-i-aliye/**
+
+Repository: https://github.com/zainuljatt-tech/devlet-i-aliye
+
+---
+
+## Netlify Drop (alternative)
 
 ## Netlify Drop (recommended)
 
