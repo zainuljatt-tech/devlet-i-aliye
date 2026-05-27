@@ -1,46 +1,49 @@
-// Google Apps Script — paste ALL of this in Extensions > Apps Script
-// Then Deploy > New Deployment > Web App > Execute as "Me", Access "Anyone"
-
 function doPost(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  
-  // Handle both JSON and form-encoded submissions
   let ad, soyad, email, telefon;
-  
   if (e.postData && e.postData.contents) {
     try {
       const json = JSON.parse(e.postData.contents);
-      ad = json.ad;
-      soyad = json.soyad;
-      email = json.email;
-      telefon = json.telefon;
+      ad = json.ad; soyad = json.soyad; email = json.email; telefon = json.telefon;
     } catch(f) {
-      const params = e.parameter;
-      ad = params.ad;
-      soyad = params.soyad;
-      email = params.email;
-      telefon = params.telefon;
+      ad = e.parameter.ad; soyad = e.parameter.soyad; email = e.parameter.email; telefon = e.parameter.telefon;
     }
   } else if (e.parameter) {
-    ad = e.parameter.ad;
-    soyad = e.parameter.soyad;
-    email = e.parameter.email;
-    telefon = e.parameter.telefon;
+    ad = e.parameter.ad; soyad = e.parameter.soyad; email = e.parameter.email; telefon = e.parameter.telefon;
   }
-  
-  // Add headers if first row
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(['Tarih', 'Ad', 'Soyad', 'E-posta', 'Telefon']);
   }
-  
   sheet.appendRow([new Date(), ad || '', soyad || '', email || '', telefon || '']);
-  
   return ContentService
     .createTextOutput(JSON.stringify({ success: true }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-function doGet() {
-  var html = '<html><body><h2>Sheet connected ✅</h2><p>Form submissions will appear in your sheet.</p></body></html>';
+function doGet(e) {
+  const ADMIN_EMAIL = 'ugur.kaplan@devletialiye.com';
+  const ADMIN_PASS = 'osmanli2026';
+  const callback = e.parameter.callback || 'callback';
+
+  if (e.parameter.action === 'login') {
+    const email = e.parameter.email;
+    const password = e.parameter.password;
+
+    if (email !== ADMIN_EMAIL || password !== ADMIN_PASS) {
+      return ContentService
+        .createTextOutput(callback + '(' + JSON.stringify({success: false, error: 'Geçersiz giriş bilgileri'}) + ')')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const data = sheet.getDataRange().getValues();
+
+    return ContentService
+      .createTextOutput(callback + '(' + JSON.stringify({success: true, data: data}) + ')')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+
+  // Default: health check
+  var html = '<html><body><h2>Sheet connected ✅</h2></body></html>';
   return HtmlService.createHtmlOutput(html);
 }

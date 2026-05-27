@@ -577,6 +577,47 @@ footer{
   align-self:center;
   margin-top:6px;
 }
+.admin-panel{
+  text-align:center;
+}
+.admin-panel h3{
+  font-family:'Cinzel',serif;
+  font-size:1.3rem;
+  color:#d4af37;
+  margin-bottom:20px;
+}
+.admin-table-wrap{
+  max-height:400px;
+  overflow:auto;
+  border:1px solid rgba(212,175,55,0.12);
+  border-radius:10px;
+}
+.admin-panel table{
+  width:100%;
+  border-collapse:collapse;
+  font-family:'Playfair Display',serif;
+  font-size:0.85rem;
+}
+.admin-panel th{
+  background:rgba(212,175,55,0.08);
+  color:#d4af37;
+  padding:10px 12px;
+  text-align:left;
+  position:sticky;
+  top:0;
+  white-space:nowrap;
+}
+.admin-panel td{
+  padding:8px 12px;
+  border-bottom:1px solid rgba(212,175,55,0.06);
+  color:#c4b89a;
+}
+.admin-panel tr:hover td{
+  background:rgba(212,175,55,0.03);
+}
+.admin-panel .btn{
+  margin-top:16px;
+}
 
 .baskan-section{
   padding:60px 6%;

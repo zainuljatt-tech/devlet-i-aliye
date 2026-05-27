@@ -104,7 +104,39 @@
       btn.disabled = false;
     });
 
-    document.getElementById('login-form').addEventListener('submit', e => e.preventDefault());
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = this.email.value.trim();
+      const password = this.sifre.value.trim();
+      const btn = this.querySelector('.btn');
+      btn.textContent = 'Giriş yapılıyor...';
+      btn.disabled = true;
+
+      const result = await new Promise(resolve => {
+        window['__admin_login'] = resolve;
+        const s = document.createElement('script');
+        s.src = GSHEET_URL + '?action=login&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(password) + '&callback=__admin_login';
+        document.head.appendChild(s);
+      });
+
+      if (result.success) {
+        const container = document.querySelector('.auth-container');
+        let tableHtml = '<div class="admin-panel"><h3>Üye Kayıtları</h3><div class="admin-table-wrap"><table><thead><tr>';
+        result.data[0].forEach(h => { tableHtml += '<th>' + h + '</th>'; });
+        tableHtml += '</tr></thead><tbody>';
+        for (let i = 1; i < result.data.length; i++) {
+          tableHtml += '<tr>';
+          result.data[i].forEach(c => { tableHtml += '<td>' + c + '</td>'; });
+          tableHtml += '</tr>';
+        }
+        tableHtml += '</tbody></table></div><button class="btn" onclick="location.reload()">Çıkış Yap</button></div>';
+        container.innerHTML = tableHtml;
+      } else {
+        alert(result.error || 'Giriş başarısız. Bilgilerinizi kontrol edin.');
+        btn.textContent = 'Giriş Yap';
+        btn.disabled = false;
+      }
+    });
   </script>
 </body>
 </html>
