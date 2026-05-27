@@ -54,7 +54,10 @@
         <button class="btn" type="submit">Giriş Yap</button>
       </form>
 
-      <form id="register-form" class="auth-form" style="display:none" onsubmit="return submitRegister(event)">
+      <form id="register-form" class="auth-form" style="display:none" action="https://formsubmit.co/daoistanbulgenclik34@gmail.com" method="POST">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://zainuljatt-tech.github.io/devlet-i-aliye/giris-uye.html">
+        <input type="hidden" name="form-type" value="Üyelik">
         <input type="text" name="ad" placeholder="Adınız" required>
         <input type="text" name="soyad" placeholder="Soyadınız" required>
         <input type="email" name="email" placeholder="E-posta Adresiniz" required>
@@ -69,46 +72,13 @@
     <p>Osmanlı Ruhuyla Geleceğe...</p>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="main.js"></script>
   <script>
-    const SUPABASE_URL = 'https://plphuqltnutkywwqfsgp.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_BwpRHTD6REarjpCByERQpA_N2JtH3sg';
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     function showTab(tab) {
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
       document.querySelector('[onclick="showTab(\'' + tab + '\')"]').classList.add('active');
       document.getElementById(tab + '-form').style.display = 'flex';
-    }
-
-    async function submitRegister(event) {
-      event.preventDefault();
-      const form = event.target;
-      const btn = form.querySelector('.btn');
-      const ad = form.querySelector('[name="ad"]').value.trim();
-      const soyad = form.querySelector('[name="soyad"]').value.trim();
-      const email = form.querySelector('[name="email"]').value.trim();
-      const telefon = form.querySelector('[name="telefon"]').value.trim();
-
-      btn.textContent = 'Kaydediliyor...';
-      btn.disabled = true;
-
-      const { error } = await supabaseClient.from('registrations').insert({
-        ad, soyad, email, telefon
-      });
-
-      btn.textContent = 'Üye Ol';
-      btn.disabled = false;
-
-      if (error) {
-        alert('Bir hata oluştu. Lütfen tekrar deneyin.');
-        return;
-      }
-
-      alert('Kaydınız alındı! Teşekkür ederiz.');
-      form.reset();
     }
   </script>
 </body>
