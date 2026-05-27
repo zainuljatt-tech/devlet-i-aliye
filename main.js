@@ -1,3 +1,60 @@
+/* ===== GOLDEN FLOATING PARTICLES ===== */
+(function() {
+  const canvas = document.createElement('canvas');
+  canvas.id = 'gold-particles';
+  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998;';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const COUNT = 45;
+  for (let i = 0; i < COUNT; i++) {
+    particles.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: Math.random() * 2.2 + 0.8,
+      speedY: Math.random() * 0.25 + 0.08,
+      drift: Math.random() * 0.2 - 0.1,
+      alpha: Math.random() * 0.5 + 0.2,
+      pulse: Math.random() * Math.PI * 2
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => {
+      p.y -= p.speedY;
+      p.x += p.drift + Math.sin(p.pulse) * 0.15;
+      p.pulse += 0.008;
+      if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
+      if (p.x < -10) p.x = w + 10;
+      if (p.x > w + 10) p.x = -10;
+
+      const flicker = 0.6 + Math.sin(p.pulse * 1.5) * 0.4;
+      const a = p.alpha * flicker;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(212,175,55,${a})`;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(212,175,55,${a * 0.12})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
 /* ===== PAGE LOAD LOGO INTRO ===== */
 document.body.style.overflow = 'hidden';
 window.addEventListener('load', () => {

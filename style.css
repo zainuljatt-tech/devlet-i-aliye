@@ -1437,3 +1437,38 @@ footer.visible{
   background:rgba(212,175,55,0.03);
 }
 }
+
+/* ===== GOLDEN GLOW OUTLINES ===== */
+nav{
+  box-shadow:0 0 30px rgba(212,175,55,0.06), 0 1px 0 rgba(212,175,55,0.12);
+}
+.btn{
+  box-shadow:0 0 20px rgba(212,175,55,0.06), 0 0 60px rgba(212,175,55,0.03);
+  border-color:rgba(212,175,55,0.25) !important;
+}
+.btn:hover{
+  box-shadow:0 0 30px rgba(212,175,55,0.12), 0 0 80px rgba(212,175,55,0.05);
+  border-color:rgba(212,175,55,0.45) !important;
+}
+.mission-card, .team-box, .about-photo, .baskan-frame img{
+  box-shadow:0 0 25px rgba(212,175,55,0.05), inset 0 0 30px rgba(212,175,55,0.02);
+}
+.baskan-frame img{
+  box-shadow:0 0 40px rgba(212,175,55,0.08), 0 0 100px rgba(212,175,55,0.03);
+}
+.auth-form input:focus{
+  box-shadow:0 0 25px rgba(212,175,55,0.1), 0 0 60px rgba(212,175,55,0.04);
+  border-color:rgba(212,175,55,0.35);
+}
+section{
+  box-shadow:0 -1px 0 rgba(212,175,55,0.04);
+}
+.gallery img{
+  box-shadow:0 0 15px rgba(212,175,55,0.04);
+}
+#scroll-progress{
+  box-shadow:0 0 12px rgba(212,175,55,0.3);
+}
+.auth-tab.active{
+  text-shadow:0 0 20px rgba(212,175,55,0.15);
+}
