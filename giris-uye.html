@@ -128,7 +128,7 @@
         const headers = lines[0].split(',');
 
         const container = document.querySelector('.auth-container');
-        let html = '<div class="admin-panel"><h3>Üye Kayıtları</h3><div class="admin-table-wrap"><table><thead><tr>';
+        let html = '<div class="admin-panel"><h3>Üye Kayıtları</h3><p class="admin-count">Toplam üye sayısı: <strong>' + (lines.length - 1) + '</strong></p><div class="admin-table-wrap"><table><thead><tr>';
         headers.forEach(h => { html += '<th>' + h.replace(/"/g, '') + '</th>'; });
         html += '</tr></thead><tbody>';
         for (let i = 1; i < lines.length; i++) {

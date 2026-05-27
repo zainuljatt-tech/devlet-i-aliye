@@ -586,6 +586,16 @@ footer{
   color:#d4af37;
   margin-bottom:20px;
 }
+.admin-count{
+  font-family:'Playfair Display',serif;
+  font-size:1rem;
+  color:#c4b89a;
+  margin-bottom:16px;
+}
+.admin-count strong{
+  color:#d4af37;
+  font-size:1.2rem;
+}
 .admin-table-wrap{
   max-height:400px;
   overflow:auto;
