@@ -107,6 +107,23 @@
       btn.disabled = false;
     });
 
+    async function deleteRow(rowNum) {
+      if (!confirm('Bu üyeyi silmek istediğinize emin misiniz?')) return;
+      try {
+        await fetch(GSHEET_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ action: 'delete', row: rowNum, secret: ADMIN_PASS })
+        });
+        document.getElementById('row-' + rowNum).remove();
+        const countEl = document.querySelector('.admin-count strong');
+        if (countEl) countEl.textContent = parseInt(countEl.textContent) - 1;
+      } catch(err) {
+        alert('Silme işlemi başarısız.');
+      }
+    }
+
     document.getElementById('login-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const btn = this.querySelector('.btn');
@@ -130,11 +147,13 @@
         const container = document.querySelector('.auth-container');
         let html = '<div class="admin-panel"><h3>Üye Kayıtları</h3><p class="admin-count">Toplam üye sayısı: <strong>' + (lines.length - 1) + '</strong></p><div class="admin-table-wrap"><table><thead><tr>';
         headers.forEach(h => { html += '<th>' + h.replace(/"/g, '') + '</th>'; });
-        html += '</tr></thead><tbody>';
+        html += '<th>İşlem</th></tr></thead><tbody>';
         for (let i = 1; i < lines.length; i++) {
           const cells = lines[i].split(',');
-          html += '<tr>';
+          const sheetRow = i + 1;
+          html += '<tr id="row-' + sheetRow + '">';
           cells.forEach(c => { html += '<td>' + c.replace(/"/g, '') + '</td>'; });
+          html += '<td><button class="btn-delete" onclick="deleteRow(' + sheetRow + ')">Sil</button></td>';
           html += '</tr>';
         }
         html += '</tbody></table></div><button class="btn" onclick="location.reload()">Çıkış Yap</button></div>';

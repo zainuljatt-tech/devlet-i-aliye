@@ -1,5 +1,19 @@
 function doPost(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const ADMIN_PASS = 'osmanli2026';
+
+  // Handle delete
+  if (e.parameter.action === 'delete') {
+    if (e.parameter.secret !== ADMIN_PASS) {
+      return ContentService.createTextOutput(JSON.stringify({success: false})).setMimeType(ContentService.MimeType.JSON);
+    }
+    const rowNum = parseInt(e.parameter.row);
+    if (rowNum > 1 && rowNum <= sheet.getLastRow()) {
+      sheet.deleteRow(rowNum);
+    }
+    return ContentService.createTextOutput(JSON.stringify({success: true})).setMimeType(ContentService.MimeType.JSON);
+  }
+
   let ad, soyad, email, telefon;
   if (e.postData && e.postData.contents) {
     try {
@@ -21,29 +35,6 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  const ADMIN_EMAIL = 'ugur.kaplan@devletialiye.com';
-  const ADMIN_PASS = 'osmanli2026';
-  const callback = e.parameter.callback || 'callback';
-
-  if (e.parameter.action === 'login') {
-    const email = e.parameter.email;
-    const password = e.parameter.password;
-
-    if (email !== ADMIN_EMAIL || password !== ADMIN_PASS) {
-      return ContentService
-        .createTextOutput(callback + '(' + JSON.stringify({success: false, error: 'Geçersiz giriş bilgileri'}) + ')')
-        .setMimeType(ContentService.MimeType.JAVASCRIPT);
-    }
-
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    const data = sheet.getDataRange().getValues();
-
-    return ContentService
-      .createTextOutput(callback + '(' + JSON.stringify({success: true, data: data}) + ')')
-      .setMimeType(ContentService.MimeType.JAVASCRIPT);
-  }
-
-  // Default: health check
   var html = '<html><body><h2>Sheet connected ✅</h2></body></html>';
   return HtmlService.createHtmlOutput(html);
 }
