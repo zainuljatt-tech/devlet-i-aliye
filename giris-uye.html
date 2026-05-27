@@ -139,9 +139,9 @@
       btn.disabled = true;
 
       try {
-        const res = await fetch(CSV_URL);
+        const res = await fetch(CSV_URL + '&_=' + Date.now());
         const csv = await res.text();
-        const lines = csv.split('\n').filter(l => l.trim());
+        const lines = csv.split('\n').filter(l => l.trim() && l.split(',').some(c => c.trim()));
         const headers = lines[0].split(',');
 
         const container = document.querySelector('.auth-container');
