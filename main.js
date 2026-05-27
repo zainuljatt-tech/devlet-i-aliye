@@ -1,50 +1,27 @@
 /* ===== 3D DEPTH PARALLAX ===== */
 (function() {
-  const layers = [
-    { type: 'crescent', speed: 0.12, top: '12%', left: '6%', size: 60 },
-    { type: 'star', speed: 0.22, top: '30%', right: '8%', size: 20 },
-    { type: 'star', speed: 0.18, top: '55%', left: '4%', size: 14 },
-    { type: 'geometric', speed: 0.08, top: '70%', right: '5%', size: 80 },
-    { type: 'star', speed: 0.25, top: '85%', left: '10%', size: 10 },
-  ];
+  const hero = document.querySelector('.hero');
+  if (!hero) return;
+  const logo = hero.querySelector('.hero-logo');
+  const title = hero.querySelector('h2');
+  const subtitle = hero.querySelector('p');
 
-  const els = [];
-  layers.forEach(l => {
-    const el = document.createElement('div');
-    el.className = 'parallax-depth';
-    let inner = '';
-    if (l.type === 'crescent') {
-      el.style.cssText = `position:fixed;pointer-events:none;z-index:0;top:${l.top};left:${l.left};opacity:0.08;`;
-      inner = `<svg width="${l.size}" height="${l.size}" viewBox="0 0 100 100"><path d="M70 10A45 45 0 1 0 70 90 35 35 0 1 1 70 10Z" fill="#d4af37"/></svg>`;
-    } else if (l.type === 'star') {
-      el.style.cssText = `position:fixed;pointer-events:none;z-index:0;top:${l.top};${l.left ? 'left:'+l.left : 'right:'+l.right};opacity:0.06;`;
-      inner = `<svg width="${l.size}" height="${l.size}" viewBox="0 0 50 50"><polygon points="25,0 31,17 50,17 35,28 40,46 25,35 10,46 15,28 0,17 19,17" fill="#d4af37"/></svg>`;
-    } else if (l.type === 'geometric') {
-      el.style.cssText = `position:fixed;pointer-events:none;z-index:0;top:${l.top};right:${l.right};opacity:0.04;`;
-      inner = `<svg width="${l.size}" height="${l.size}" viewBox="0 0 100 100"><polygon points="50,0 93,25 93,75 50,100 7,75 7,25" fill="none" stroke="#d4af37" stroke-width="0.8"/><polygon points="50,15 78,32 78,68 50,85 22,68 22,32" fill="none" stroke="#d4af37" stroke-width="0.6"/><polygon points="50,30 64,40 64,60 50,70 36,60 36,40" fill="none" stroke="#d4af37" stroke-width="0.4"/></svg>`;
-    }
-    el.innerHTML = inner;
-    el.dataset.speed = l.speed;
-    el.dataset.origY = l.top;
-    document.body.appendChild(el);
-    els.push(el);
-  });
-
-  let ticking = false;
   window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        const scrollY = window.scrollY;
-        els.forEach(el => {
-          const speed = parseFloat(el.dataset.speed);
-          el.style.transform = `translateY(${scrollY * speed}px)`;
-        });
-        ticking = false;
-      });
-      ticking = true;
-    }
+    const st = window.scrollY;
+    const heroH = hero.offsetHeight;
+    if (st > heroH * 1.5) return;
+
+    const slow = st * 0.06;
+    const mid = st * 0.12;
+    const fast = st * 0.20;
+
+    if (logo) logo.style.transform = `translateY(${slow}px) scale(${1 - st * 0.00008})`;
+    if (title) title.style.transform = `translateY(${mid}px)`;
+    if (subtitle) subtitle.style.transform = `translateY(${fast}px)`;
   });
 })();
+
+/* ===== GOLDEN FLOATING PARTICLES ===== */
 
 /* ===== GOLDEN FLOATING PARTICLES ===== */
 (function() {
