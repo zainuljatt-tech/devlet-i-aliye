@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giriş / Üye Ol | Devlet-i Aliyye Ocakları İstanbul İl Gençlik Kolları</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="subpage">
+
+  <nav>
+    <div class="nav-header">
+      <div class="logo">
+        <a href="index.html"><img src="images/logo.png" alt="Logo"></a>
+        <h1>Devlet-i Aliyye Ocakları İstanbul İl Gençlik Kolları Başkanlığı</h1>
+      </div>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Menü">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <ul>
+      <li><a href="index.html">Ana Sayfa</a></li>
+      <li><a href="hakkimizda.html">Hakkımızda</a></li>
+      <li><a href="misyon.html">Misyon</a></li>
+      <li><a href="galeri.html">Galeri</a></li>
+      <li><a href="teskilat.html">Teşkilat</a></li>
+      <li><a href="iletisim.html">İletişim</a></li>
+      <li><a href="giris-uye.html" class="active">Giriş / Üye Ol</a></li>
+    </ul>
+  </nav>
+
+  <section>
+    <h2 class="title">Giriş / Üye Ol</h2>
+    <div class="auth-container">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="showTab('login')">Giriş Yap</button>
+        <button class="auth-tab" onclick="showTab('register')">Üye Ol</button>
+      </div>
+
+      <form id="login-form" class="auth-form" action="https://formsubmit.co/doaistanbulgenclik34@gmail.com" method="POST">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="">
+        <input type="hidden" name="form-type" value="Giriş">
+        <input type="email" name="email" placeholder="E-posta Adresiniz" required>
+        <input type="password" name="sifre" placeholder="Şifreniz" required>
+        <button class="btn" type="submit">Giriş Yap</button>
+      </form>
+
+      <form id="register-form" class="auth-form" style="display:none" action="https://formsubmit.co/doaistanbulgenclik34@gmail.com" method="POST">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="">
+        <input type="hidden" name="form-type" value="Üyelik">
+        <input type="text" name="ad" placeholder="Adınız" required>
+        <input type="text" name="soyad" placeholder="Soyadınız" required>
+        <input type="email" name="email" placeholder="E-posta Adresiniz" required>
+        <input type="tel" name="telefon" placeholder="Telefon Numaranız" required>
+        <button class="btn" type="submit">Üye Ol</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Devlet-i Aliyye Ocakları İstanbul İl Gençlik Kolları Başkanlığı</p>
+    <p>Osmanlı Ruhuyla Geleceğe...</p>
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    function showTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
+      document.querySelector('[onclick="showTab(\'' + tab + '\')"]').classList.add('active');
+      document.getElementById(tab + '-form').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
