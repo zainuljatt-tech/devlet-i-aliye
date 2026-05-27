@@ -45,19 +45,13 @@
         <button class="auth-tab" onclick="showTab('register')">Üye Ol</button>
       </div>
 
-      <form id="login-form" class="auth-form" action="https://formsubmit.co/zainuljatt@gmail.com" method="POST">
-        <input type="hidden" name="_subject" value="Giriş talebi - Devlet-i Aliyye">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="form-type" value="Giriş">
+      <form id="login-form" class="auth-form">
         <input type="email" name="email" placeholder="E-posta Adresiniz" required>
         <input type="password" name="sifre" placeholder="Şifreniz" required>
         <button class="btn" type="submit">Giriş Yap</button>
       </form>
 
-      <form id="register-form" class="auth-form" style="display:none" action="https://formsubmit.co/zainuljatt@gmail.com" method="POST">
-        <input type="hidden" name="_subject" value="Yeni üye kaydı - Devlet-i Aliyye">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="form-type" value="Üyelik">
+      <form id="register-form" class="auth-form" style="display:none">
         <input type="text" name="ad" placeholder="Adınız" required>
         <input type="text" name="soyad" placeholder="Soyadınız" required>
         <input type="email" name="email" placeholder="E-posta Adresiniz" required>
@@ -80,6 +74,9 @@
       document.querySelector('[onclick="showTab(\'' + tab + '\')"]').classList.add('active');
       document.getElementById(tab + '-form').style.display = 'flex';
     }
+    document.querySelectorAll('.auth-form').forEach(f => {
+      f.addEventListener('submit', e => e.preventDefault());
+    });
   </script>
 </body>
 </html>
