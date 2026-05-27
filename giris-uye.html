@@ -68,15 +68,50 @@
 
   <script src="main.js"></script>
   <script>
+    const GSHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
     function showTab(tab) {
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
       document.querySelector('[onclick="showTab(\'' + tab + '\')"]').classList.add('active');
       document.getElementById(tab + '-form').style.display = 'flex';
     }
-    document.querySelectorAll('.auth-form').forEach(f => {
-      f.addEventListener('submit', e => e.preventDefault());
+
+    document.getElementById('register-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (GSHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+        alert('Google Sheet bağlantısı henüz ayarlanmadı.');
+        return;
+      }
+      const btn = this.querySelector('.btn');
+      btn.textContent = 'Gönderiliyor...';
+      btn.disabled = true;
+      try {
+        const data = {
+          ad: this.ad.value.trim(),
+          soyad: this.soyad.value.trim(),
+          email: this.email.value.trim(),
+          telefon: this.telefon.value.trim()
+        };
+        const res = await fetch(GSHEET_URL, {
+          method: 'POST',
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert('Kaydınız alındı! Teşekkür ederiz.');
+          this.reset();
+        } else {
+          alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+      } catch(err) {
+        alert('Bağlantı hatası. Lütfen tekrar deneyin.');
+      }
+      btn.textContent = 'Üye Ol';
+      btn.disabled = false;
     });
+
+    document.getElementById('login-form').addEventListener('submit', e => e.preventDefault());
   </script>
 </body>
 </html>
