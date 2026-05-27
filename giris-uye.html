@@ -69,6 +69,9 @@
   <script src="main.js"></script>
   <script>
     const GSHEET_URL = 'https://script.google.com/macros/s/AKfycbz0z2aBnrO5zOwKZvxEgJoTOAy6ds9Ks_4P2JpajlcVtIUF7S2YXyin90-AWruMXtgf/exec';
+    const ADMIN_EMAIL = 'ugur.kaplan@devletialiye.com';
+    const ADMIN_PASS = 'osmanli2026';
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTaj3fkJxWs-QCIvRO6TaPB4fIjcz1ilR_Dk8V9CsU0N7wpfmOAp-ICvbf8fkyP6xkkgqy7aNPQArp_/pub?output=csv';
 
     function showTab(tab) {
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -106,33 +109,38 @@
 
     document.getElementById('login-form').addEventListener('submit', async function(e) {
       e.preventDefault();
+      const btn = this.querySelector('.btn');
       const email = this.email.value.trim();
       const password = this.sifre.value.trim();
-      const btn = this.querySelector('.btn');
-      btn.textContent = 'Giriş yapılıyor...';
+
+      if (email !== ADMIN_EMAIL || password !== ADMIN_PASS) {
+        alert('Geçersiz giriş bilgileri.');
+        return;
+      }
+
+      btn.textContent = 'Yükleniyor...';
       btn.disabled = true;
 
-      const result = await new Promise(resolve => {
-        window['__admin_login'] = resolve;
-        const s = document.createElement('script');
-        s.src = GSHEET_URL + '?action=login&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(password) + '&callback=__admin_login';
-        document.head.appendChild(s);
-      });
+      try {
+        const res = await fetch(CSV_URL);
+        const csv = await res.text();
+        const lines = csv.split('\n').filter(l => l.trim());
+        const headers = lines[0].split(',');
 
-      if (result.success) {
         const container = document.querySelector('.auth-container');
-        let tableHtml = '<div class="admin-panel"><h3>Üye Kayıtları</h3><div class="admin-table-wrap"><table><thead><tr>';
-        result.data[0].forEach(h => { tableHtml += '<th>' + h + '</th>'; });
-        tableHtml += '</tr></thead><tbody>';
-        for (let i = 1; i < result.data.length; i++) {
-          tableHtml += '<tr>';
-          result.data[i].forEach(c => { tableHtml += '<td>' + c + '</td>'; });
-          tableHtml += '</tr>';
+        let html = '<div class="admin-panel"><h3>Üye Kayıtları</h3><div class="admin-table-wrap"><table><thead><tr>';
+        headers.forEach(h => { html += '<th>' + h.replace(/"/g, '') + '</th>'; });
+        html += '</tr></thead><tbody>';
+        for (let i = 1; i < lines.length; i++) {
+          const cells = lines[i].split(',');
+          html += '<tr>';
+          cells.forEach(c => { html += '<td>' + c.replace(/"/g, '') + '</td>'; });
+          html += '</tr>';
         }
-        tableHtml += '</tbody></table></div><button class="btn" onclick="location.reload()">Çıkış Yap</button></div>';
-        container.innerHTML = tableHtml;
-      } else {
-        alert(result.error || 'Giriş başarısız. Bilgilerinizi kontrol edin.');
+        html += '</tbody></table></div><button class="btn" onclick="location.reload()">Çıkış Yap</button></div>';
+        container.innerHTML = html;
+      } catch(err) {
+        alert('Veri alınamadı: ' + err.message);
         btn.textContent = 'Giriş Yap';
         btn.disabled = false;
       }
