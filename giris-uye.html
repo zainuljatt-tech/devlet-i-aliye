@@ -77,46 +77,31 @@
       document.getElementById(tab + '-form').style.display = 'flex';
     }
 
-    const iframe = document.createElement('iframe');
-    iframe.name = 'gsheet-iframe';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    document.getElementById('register-form').addEventListener('submit', function(e) {
+    document.getElementById('register-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const btn = this.querySelector('.btn');
       btn.textContent = 'Gönderiliyor...';
       btn.disabled = true;
-
-      const form = this;
-      const data = {
-        ad: form.ad.value.trim(),
-        soyad: form.soyad.value.trim(),
-        email: form.email.value.trim(),
-        telefon: form.telefon.value.trim()
-      };
-
-      const tempForm = document.createElement('form');
-      tempForm.method = 'POST';
-      tempForm.action = GSHEET_URL;
-      tempForm.target = 'gsheet-iframe';
-      tempForm.style.display = 'none';
-      Object.entries(data).forEach(([k, v]) => {
-        const inp = document.createElement('input');
-        inp.name = k;
-        inp.value = v;
-        tempForm.appendChild(inp);
-      });
-      document.body.appendChild(tempForm);
-      tempForm.submit();
-      document.body.removeChild(tempForm);
-
-      setTimeout(() => {
+      try {
+        const data = {
+          ad: this.ad.value.trim(),
+          soyad: this.soyad.value.trim(),
+          email: this.email.value.trim(),
+          telefon: this.telefon.value.trim()
+        };
+        await fetch(GSHEET_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(data)
+        });
         alert('Kaydınız alındı! Teşekkür ederiz.');
-        form.reset();
-        btn.textContent = 'Üye Ol';
-        btn.disabled = false;
-      }, 1000);
+        this.reset();
+      } catch(err) {
+        alert('Bağlantı hatası. Lütfen tekrar deneyin.');
+      }
+      btn.textContent = 'Üye Ol';
+      btn.disabled = false;
     });
 
     document.getElementById('login-form').addEventListener('submit', e => e.preventDefault());
