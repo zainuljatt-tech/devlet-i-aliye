@@ -1524,3 +1524,13 @@ section + section::after{
   pointer-events:none;
   border-radius:0 4px 0 0;
 }
+
+/* ===== DUYURU PAGE ===== */
+.about img[alt="Duyuru"]{
+  display:block;
+  max-width:100%;
+  width:auto;
+  height:auto;
+  border-radius:12px;
+  box-shadow:0 0 40px rgba(212,175,55,0.08);
+}
