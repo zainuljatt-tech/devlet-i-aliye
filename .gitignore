@@ -2,3 +2,6 @@
 index-standalone-backup.html
 *.b64.txt
 images/index.html
+.netlify/
+deploy.ps1
+HOSTING.md
