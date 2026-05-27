@@ -68,7 +68,7 @@
 
   <script src="main.js"></script>
   <script>
-    const GSHEET_URL = 'https://script.google.com/macros/s/AKfycbxQYvokVYj-IhLNABugmVBhLKwuwtkrj7J4fLvtVJ0n1A9obuu_MPWp0KnZgKYaZ77K/exec';
+    const GSHEET_URL = 'https://script.google.com/macros/s/AKfycbz0z2aBnrO5zOwKZvxEgJoTOAy6ds9Ks_4P2JpajlcVtIUF7S2YXyin90-AWruMXtgf/exec';
 
     function showTab(tab) {
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -77,38 +77,46 @@
       document.getElementById(tab + '-form').style.display = 'flex';
     }
 
-    document.getElementById('register-form').addEventListener('submit', async function(e) {
+    const iframe = document.createElement('iframe');
+    iframe.name = 'gsheet-iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    document.getElementById('register-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      if (GSHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-        alert('Google Sheet bağlantısı henüz ayarlanmadı.');
-        return;
-      }
       const btn = this.querySelector('.btn');
       btn.textContent = 'Gönderiliyor...';
       btn.disabled = true;
-      try {
-        const data = {
-          ad: this.ad.value.trim(),
-          soyad: this.soyad.value.trim(),
-          email: this.email.value.trim(),
-          telefon: this.telefon.value.trim()
-        };
-        const res = await fetch(GSHEET_URL, {
-          method: 'POST',
-          body: JSON.stringify(data)
-        });
-        const json = await res.json();
-        if (json.success) {
-          alert('Kaydınız alındı! Teşekkür ederiz.');
-          this.reset();
-        } else {
-          alert('Bir hata oluştu. Lütfen tekrar deneyin.');
-        }
-      } catch(err) {
-        alert('Bağlantı hatası. Lütfen tekrar deneyin.');
-      }
-      btn.textContent = 'Üye Ol';
-      btn.disabled = false;
+
+      const form = this;
+      const data = {
+        ad: form.ad.value.trim(),
+        soyad: form.soyad.value.trim(),
+        email: form.email.value.trim(),
+        telefon: form.telefon.value.trim()
+      };
+
+      const tempForm = document.createElement('form');
+      tempForm.method = 'POST';
+      tempForm.action = GSHEET_URL;
+      tempForm.target = 'gsheet-iframe';
+      tempForm.style.display = 'none';
+      Object.entries(data).forEach(([k, v]) => {
+        const inp = document.createElement('input');
+        inp.name = k;
+        inp.value = v;
+        tempForm.appendChild(inp);
+      });
+      document.body.appendChild(tempForm);
+      tempForm.submit();
+      document.body.removeChild(tempForm);
+
+      setTimeout(() => {
+        alert('Kaydınız alındı! Teşekkür ederiz.');
+        form.reset();
+        btn.textContent = 'Üye Ol';
+        btn.disabled = false;
+      }, 1000);
     });
 
     document.getElementById('login-form').addEventListener('submit', e => e.preventDefault());
