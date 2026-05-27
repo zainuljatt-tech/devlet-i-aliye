@@ -1,14 +1,15 @@
-import { getStore } from '@netlify/blobs';
+const { getStore } = require('@netlify/blobs');
 
 const ADMIN_PASS = 'osmanli2026';
 const STORE = 'devlet-aliye-members';
 
-export async function handler(event, context) {
+exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type, x-admin-secret',
     'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS'
   };
+
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers, body: '' };
 
   const store = getStore(STORE);
@@ -42,4 +43,4 @@ export async function handler(event, context) {
   }
 
   return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
-}
+};
