@@ -1,20 +1,15 @@
--- Run this in your Supabase SQL Editor (https://supabase.com/dashboard/project/plphuqltnutkywwqfsgp/sql/new)
+-- Run ALL of this in Supabase SQL Editor:
+-- https://supabase.com/dashboard/project/plphuqltnutkywwqfsgp/sql/new
 
-CREATE TABLE registrations (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  ad TEXT NOT NULL,
-  soyad TEXT NOT NULL,
-  email TEXT NOT NULL,
-  telefon TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
+-- Enable RLS (safe to run even if already enabled)
 ALTER TABLE registrations ENABLE ROW LEVEL SECURITY;
 
+-- Allow anyone to submit the form
 CREATE POLICY "anon_insert" ON registrations
   FOR INSERT TO anon
   WITH CHECK (true);
 
+-- Create the password-protected function for admin to view data
 CREATE OR REPLACE FUNCTION get_registrations(admin_pass TEXT)
 RETURNS SETOF registrations
 LANGUAGE plpgsql
@@ -29,4 +24,5 @@ BEGIN
 END;
 $$;
 
+-- Allow anonymous users to call this function
 GRANT EXECUTE ON FUNCTION get_registrations TO anon;

@@ -77,44 +77,63 @@
   </footer>
 
   <script src="main.js"></script>
-  <script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
     const SUPABASE_URL = 'https://plphuqltnutkywwqfsgp.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_BwpRHTD6REarjpCByERQpA_N2JtH3sg';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const ADMIN_PASSWORD = 'dao-admin-2026';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function checkAdminPass() {
       const pass = document.getElementById('admin-pass-input').value;
       const errorEl = document.getElementById('admin-error');
-      if (!pass) { errorEl.style.display = 'block'; return; }
-      document.getElementById('admin-login').style.display = 'none';
-      document.getElementById('admin-content').style.display = 'block';
-      await loadRegistrations(pass);
+      const loginBtn = document.querySelector('.admin-login-box .btn');
+
+      errorEl.style.display = 'none';
+      if (!pass) { errorEl.textContent = 'Şifre girin'; errorEl.style.display = 'block'; return; }
+
+      loginBtn.textContent = 'Kontrol ediliyor...';
+      loginBtn.disabled = true;
+
+      try {
+        const { data, error } = await supabase.rpc('get_registrations', { admin_pass: pass });
+
+        if (error) {
+          loginBtn.textContent = 'Giriş';
+          loginBtn.disabled = false;
+          errorEl.textContent = 'Hatalı şifre veya fonksiyon hatası: ' + error.message;
+          errorEl.style.display = 'block';
+          return;
+        }
+
+        document.getElementById('admin-login').style.display = 'none';
+        document.getElementById('admin-content').style.display = 'block';
+
+        document.getElementById('total-count').textContent = data.length;
+        const tbody = document.getElementById('admin-tbody');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          document.getElementById('admin-empty').style.display = 'block';
+          return;
+        }
+
+        document.getElementById('admin-empty').style.display = 'none';
+        data.forEach((r, i) => {
+          const tr = document.createElement('tr');
+          const date = new Date(r.created_at).toLocaleDateString('tr-TR');
+          tr.innerHTML = `<td>${i + 1}</td><td>${r.ad}</td><td>${r.soyad}</td><td>${r.email}</td><td>${r.telefon}</td><td>${date}</td>`;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        loginBtn.textContent = 'Giriş';
+        loginBtn.disabled = false;
+        errorEl.textContent = 'Bağlantı hatası: ' + e.message;
+        errorEl.style.display = 'block';
+      }
     }
 
-    async function loadRegistrations(password) {
-      const { data, error } = await supabase.rpc('get_registrations', { admin_pass: password });
-      if (error || !data) {
-        document.getElementById('admin-login').style.display = 'block';
-        document.getElementById('admin-content').style.display = 'none';
-        document.getElementById('admin-error').style.display = 'block';
-        return;
-      }
-      document.getElementById('total-count').textContent = data.length;
-      const tbody = document.getElementById('admin-tbody');
-      tbody.innerHTML = '';
-      if (data.length === 0) {
-        document.getElementById('admin-empty').style.display = 'block';
-        return;
-      }
-      document.getElementById('admin-empty').style.display = 'none';
-      data.forEach((r, i) => {
-        const tr = document.createElement('tr');
-        const date = new Date(r.created_at).toLocaleDateString('tr-TR');
-        tr.innerHTML = `<td>${i + 1}</td><td>${r.ad}</td><td>${r.soyad}</td><td>${r.email}</td><td>${r.telefon}</td><td>${date}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
+    window.checkAdminPass = checkAdminPass;
 
     document.getElementById('admin-pass-input').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') checkAdminPass();
