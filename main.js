@@ -55,6 +55,48 @@
   animate();
 })();
 
+/* ===== GOLD CLICK SPARKLE ===== */
+document.addEventListener('click', (e) => {
+  const colors = ['#d4af37', '#f0d060', '#e8c84a', '#c49820'];
+  for (let i = 0; i < 10; i++) {
+    const dot = document.createElement('div');
+    const angle = (i / 10) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+    const vel = 30 + Math.random() * 50;
+    const size = 3 + Math.random() * 4;
+    dot.style.cssText = `
+      position:fixed; width:${size}px; height:${size}px; border-radius:50%;
+      background:${colors[i % 4]}; pointer-events:none; z-index:99999;
+      left:${e.clientX}px; top:${e.clientY}px;
+      box-shadow:0 0 ${4 + size}px rgba(212,175,55,0.6);
+    `;
+    document.body.appendChild(dot);
+    const x = Math.cos(angle) * vel;
+    const y = Math.sin(angle) * vel - 20;
+    dot.animate([
+      { transform: 'translate(0,0) scale(1.2)', opacity: 1 },
+      { transform: `translate(${x}px,${y}px) scale(0)`, opacity: 0 }
+    ], { duration: 500 + Math.random() * 200, easing: 'cubic-bezier(.25,.46,.45,.94)' })
+      .onfinish = () => dot.remove();
+  }
+});
+
+/* ===== HERO TYPEWRITER ===== */
+(function() {
+  const el = document.querySelector('.hero-content p');
+  if (!el) return;
+  const text = el.innerHTML;
+  el.innerHTML = '';
+  el.style.minHeight = '60px';
+  let i = 0;
+  setTimeout(function type() {
+    if (i < text.length) {
+      el.innerHTML += text[i];
+      i++;
+      setTimeout(type, 30 + Math.random() * 18);
+    }
+  }, 2200);
+})();
+
 /* ===== PAGE LOAD LOGO INTRO ===== */
 document.body.style.overflow = 'hidden';
 window.addEventListener('load', () => {

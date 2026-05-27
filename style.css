@@ -1472,3 +1472,55 @@ section{
 .auth-tab.active{
   text-shadow:0 0 20px rgba(212,175,55,0.15);
 }
+
+/* ===== GOLD SECTION DIVIDERS ===== */
+section + section{
+  position:relative;
+  padding-top:50px;
+}
+section + section::before{
+  content:'';
+  position:absolute;
+  top:0; left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(212,175,55,0.25), #d4af37, rgba(212,175,55,0.25), transparent);
+}
+section + section::after{
+  content:'✦';
+  position:absolute;
+  top:-8px; left:50%;
+  transform:translateX(-50%);
+  font-size:13px;
+  color:#d4af37;
+  opacity:0.5;
+  background:#0a0907;
+  padding:0 14px;
+  z-index:1;
+}
+
+/* ===== GOLD CORNER FRAMES ===== */
+.baskan-frame{
+  position:relative;
+}
+.baskan-frame::before{
+  content:'';
+  position:absolute;
+  top:-8px; left:-8px;
+  width:32px; height:32px;
+  border-top:2px solid rgba(212,175,55,0.2);
+  border-left:2px solid rgba(212,175,55,0.2);
+  pointer-events:none;
+  border-radius:4px 0 0 0;
+}
+.baskan-frame::after{
+  content:'';
+  position:absolute;
+  top:-8px; right:-8px;
+  width:32px; height:32px;
+  border-top:2px solid rgba(212,175,55,0.2);
+  border-right:2px solid rgba(212,175,55,0.2);
+  pointer-events:none;
+  border-radius:0 4px 0 0;
+}
