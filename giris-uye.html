@@ -68,10 +68,16 @@
 
   <script src="main.js"></script>
   <script>
-    const GSHEET_URL = 'https://script.google.com/macros/s/AKfycbz0z2aBnrO5zOwKZvxEgJoTOAy6ds9Ks_4P2JpajlcVtIUF7S2YXyin90-AWruMXtgf/exec';
     const ADMIN_EMAIL = 'ugur.kaplan@devletialiye.com';
     const ADMIN_PASS = 'osmanli2026';
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTaj3fkJxWs-QCIvRO6TaPB4fIjcz1ilR_Dk8V9CsU0N7wpfmOAp-ICvbf8fkyP6xkkgqy7aNPQArp_/pub?output=csv';
+    const STORAGE_KEY = 'devlet_aliye_members';
+
+    function getMembers() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    }
+    function saveMembers(arr) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    }
 
     function showTab(tab) {
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -80,97 +86,53 @@
       document.getElementById(tab + '-form').style.display = 'flex';
     }
 
-    document.getElementById('register-form').addEventListener('submit', async function(e) {
+    document.getElementById('register-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      const btn = this.querySelector('.btn');
-      btn.textContent = 'Gönderiliyor...';
-      btn.disabled = true;
-      try {
-        const data = {
-          ad: this.ad.value.trim(),
-          soyad: this.soyad.value.trim(),
-          email: this.email.value.trim(),
-          telefon: this.telefon.value.trim()
-        };
-        await fetch(GSHEET_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(data)
-        });
-        alert('Kaydınız alındı! Teşekkür ederiz.');
-        this.reset();
-      } catch(err) {
-        alert('Bağlantı hatası. Lütfen tekrar deneyin.');
-      }
-      btn.textContent = 'Üye Ol';
-      btn.disabled = false;
+      const members = getMembers();
+      members.push({
+        id: Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+        tarih: new Date().toLocaleString('tr-TR'),
+        ad: this.ad.value.trim(),
+        soyad: this.soyad.value.trim(),
+        email: this.email.value.trim(),
+        telefon: this.telefon.value.trim()
+      });
+      saveMembers(members);
+      alert('Kaydınız alındı! Teşekkür ederiz.');
+      this.reset();
     });
 
-    async function deleteRow(rowNum) {
+    function deleteMember(id) {
       if (!confirm('Bu üyeyi silmek istediğinize emin misiniz?')) return;
-      try {
-        await fetch(GSHEET_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ action: 'delete', row: rowNum, secret: ADMIN_PASS })
-        });
-        document.getElementById('row-' + rowNum).remove();
-        const countEl = document.querySelector('.admin-count strong');
-        if (countEl) countEl.textContent = parseInt(countEl.textContent) - 1;
-      } catch(err) {
-        alert('Silme işlemi başarısız.');
-      }
+      let members = getMembers();
+      members = members.filter(m => m.id !== id);
+      saveMembers(members);
+      document.getElementById('row-' + id).remove();
+      const countEl = document.querySelector('.admin-count strong');
+      if (countEl) countEl.textContent = parseInt(countEl.textContent) - 1;
     }
 
-    document.getElementById('login-form').addEventListener('submit', async function(e) {
+    document.getElementById('login-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const btn = this.querySelector('.btn');
-      const email = this.email.value.trim();
-      const password = this.sifre.value.trim();
-
-      if (email !== ADMIN_EMAIL || password !== ADMIN_PASS) {
+      if (this.email.value.trim() !== ADMIN_EMAIL || this.sifre.value.trim() !== ADMIN_PASS) {
         alert('Geçersiz giriş bilgileri.');
         return;
       }
-
       btn.textContent = 'Yükleniyor...';
       btn.disabled = true;
 
-      try {
-        const res = await fetch(CSV_URL + '&_=' + Date.now());
-        const csv = await res.text();
-        const allLines = csv.split('\n');
-        const dataRows = [];
-        for (let i = 1; i < allLines.length; i++) {
-          const line = allLines[i].trim();
-          if (!line) continue;
-          const cells = line.split(',');
-          const hasData = cells.slice(1).some(c => c.trim() && c.replace(/"/g, '').trim());
-          if (!hasData) continue;
-          dataRows.push({ sheetRow: i + 1, raw: allLines[i] });
-        }
-        const headers = allLines[0].split(',');
-
-        const container = document.querySelector('.auth-container');
-        let html = '<div class="admin-panel"><h3>Üye Kayıtları</h3><p class="admin-count">Toplam üye sayısı: <strong>' + dataRows.length + '</strong></p><div class="admin-table-wrap"><table><thead><tr>';
-        headers.forEach(h => { html += '<th>' + h.replace(/"/g, '') + '</th>'; });
-        html += '<th>İşlem</th></tr></thead><tbody>';
-        dataRows.forEach(r => {
-          const cells = r.raw.split(',');
-          html += '<tr id="row-' + r.sheetRow + '">';
-          cells.forEach(c => { html += '<td>' + c.replace(/"/g, '') + '</td>'; });
-          html += '<td><button class="btn-delete" onclick="deleteRow(' + r.sheetRow + ')">Sil</button></td>';
-          html += '</tr>';
-        });
-        html += '</tbody></table></div><button class="btn" onclick="location.reload()">Çıkış Yap</button></div>';
-        container.innerHTML = html;
-      } catch(err) {
-        alert('Veri alınamadı: ' + err.message);
-        btn.textContent = 'Giriş Yap';
-        btn.disabled = false;
-      }
+      const members = getMembers();
+      const container = document.querySelector('.auth-container');
+      let html = '<div class="admin-panel"><h3>Üye Kayıtları</h3><p class="admin-count">Toplam üye sayısı: <strong>' + members.length + '</strong></p><div class="admin-table-wrap"><table><thead><tr><th>Tarih</th><th>Ad</th><th>Soyad</th><th>E-posta</th><th>Telefon</th><th>İşlem</th></tr></thead><tbody>';
+      members.forEach(m => {
+        html += '<tr id="row-' + m.id + '">';
+        html += '<td>' + m.tarih + '</td><td>' + m.ad + '</td><td>' + m.soyad + '</td><td>' + m.email + '</td><td>' + m.telefon + '</td>';
+        html += '<td><button class="btn-delete" onclick="deleteMember(\'' + m.id + '\')">Sil</button></td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table></div><button class="btn" onclick="location.reload()">Çıkış Yap</button></div>';
+      container.innerHTML = html;
     });
   </script>
 </body>
