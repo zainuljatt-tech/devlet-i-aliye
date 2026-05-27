@@ -1,3 +1,68 @@
+/* ===== LENIS SMOOTH SCROLL ===== */
+const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+function raf(time) {
+  lenis.raf(time);
+  requestAnimationFrame(raf);
+}
+requestAnimationFrame(raf);
+
+/* ===== PAGE TRANSITIONS ===== */
+(function() {
+  const overlay = document.createElement('div');
+  overlay.id = 'page-transition';
+  overlay.style.cssText = `
+    position:fixed; inset:0; z-index:99999; pointer-events:none;
+    background:#0a0907; transform:translateY(-100%); transition:transform 0.7s cubic-bezier(.77,0,.18,1);
+  `;
+  document.body.appendChild(overlay);
+
+  // On arriving at a new page, fade transition in then out
+  if (sessionStorage.getItem('pt')) {
+    sessionStorage.removeItem('pt');
+    overlay.style.transform = 'translateY(0)';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        overlay.style.transform = 'translateY(100%)';
+        setTimeout(() => { overlay.style.transform = 'translateY(-100%)'; overlay.style.pointerEvents = 'none'; }, 700);
+      });
+    });
+  }
+
+  // Intercept nav links
+  document.querySelectorAll('nav a[href]').forEach(a => {
+    a.addEventListener('click', e => {
+      if (a.hostname === location.hostname && !a.hash && a.pathname !== location.pathname) {
+        e.preventDefault();
+        sessionStorage.setItem('pt', '1');
+        overlay.style.pointerEvents = 'auto';
+        overlay.style.transform = 'translateY(0)';
+        setTimeout(() => { window.location.href = a.href; }, 700);
+      }
+    });
+  });
+})();
+
+/* ===== SPLIT TEXT REVEAL ===== */
+(function() {
+  document.querySelectorAll('.title').forEach(title => {
+    const words = title.textContent.split(' ');
+    title.innerHTML = words.map(w => `<span class="split-word">${w}</span>`).join(' ');
+    title.style.opacity = '1';
+  });
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.split-word').forEach((w, i) => {
+          w.style.transitionDelay = `${i * 0.06}s`;
+          w.classList.add('revealed');
+        });
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.title').forEach(t => obs.observe(t));
+})();
+
 /* ===== 3D DEPTH PARALLAX ===== */
 (function() {
   const hero = document.querySelector('.hero');
