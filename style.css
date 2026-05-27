@@ -1282,4 +1282,92 @@ footer.visible{
   .nav-scrolled .logo img{ width:38px; height:38px; }
   nav ul li a::after{ display:none; }
   .title{ -webkit-text-fill-color:#d4af37; background:none; animation:none; }
+
+/* Admin panel */
+#admin-login{
+  max-width:400px;
+  margin:0 auto;
+}
+.admin-login-box{
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(212,175,55,0.1);
+  border-radius:16px;
+  padding:40px 32px;
+}
+#admin-pass-input{
+  width:100%;
+  padding:14px 18px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(212,175,55,0.15);
+  color:#f5e6c8;
+  font-size:1rem;
+  border-radius:10px;
+  outline:none;
+  transition:0.3s;
+  font-family:'Playfair Display',serif;
+}
+#admin-pass-input:focus{
+  border-color:rgba(212,175,55,0.35);
+  box-shadow:0 0 20px rgba(212,175,55,0.08);
+}
+.admin-stats{
+  display:flex;
+  justify-content:center;
+  margin-bottom:30px;
+}
+.admin-stat-card{
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(212,175,55,0.1);
+  border-radius:14px;
+  padding:24px 48px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.admin-stat-num{
+  font-family:'Cinzel',serif;
+  font-size:2.4rem;
+  color:#d4af37;
+  font-weight:700;
+}
+.admin-stat-label{
+  color:#8a7e6a;
+  font-size:0.85rem;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.admin-table-wrap{
+  overflow-x:auto;
+  border:1px solid rgba(212,175,55,0.08);
+  border-radius:14px;
+  background:rgba(255,255,255,0.01);
+}
+.admin-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:0.9rem;
+}
+.admin-table th{
+  font-family:'Cinzel',serif;
+  color:#d4af37;
+  padding:14px 18px;
+  text-align:left;
+  border-bottom:1px solid rgba(212,175,55,0.1);
+  font-weight:600;
+  font-size:0.8rem;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+}
+.admin-table td{
+  padding:12px 18px;
+  color:#c4b998;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.admin-table tr:last-child td{
+  border-bottom:none;
+}
+.admin-table tr:hover td{
+  background:rgba(212,175,55,0.03);
+}
 }
