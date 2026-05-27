@@ -70,14 +70,7 @@
   <script>
     const ADMIN_EMAIL = 'ugur.kaplan@devletialiye.com';
     const ADMIN_PASS = 'osmanli2026';
-    const STORAGE_KEY = 'devlet_aliye_members';
-
-    function getMembers() {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    }
-    function saveMembers(arr) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
-    }
+    const API = '/.netlify/functions/members';
 
     function showTab(tab) {
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -86,33 +79,44 @@
       document.getElementById(tab + '-form').style.display = 'flex';
     }
 
-    document.getElementById('register-form').addEventListener('submit', function(e) {
+    document.getElementById('register-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const members = getMembers();
-      members.push({
-        id: Date.now() + '-' + Math.random().toString(36).slice(2, 6),
-        tarih: new Date().toLocaleString('tr-TR'),
-        ad: this.ad.value.trim(),
-        soyad: this.soyad.value.trim(),
-        email: this.email.value.trim(),
-        telefon: this.telefon.value.trim()
-      });
-      saveMembers(members);
-      alert('Kaydınız alındı! Teşekkür ederiz.');
-      this.reset();
+      const btn = this.querySelector('.btn');
+      btn.textContent = 'Gönderiliyor...';
+      btn.disabled = true;
+      try {
+        await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ad: this.ad.value.trim(),
+            soyad: this.soyad.value.trim(),
+            email: this.email.value.trim(),
+            telefon: this.telefon.value.trim()
+          })
+        });
+        alert('Kaydınız alındı! Teşekkür ederiz.');
+        this.reset();
+      } catch(err) {
+        alert('Bağlantı hatası. Lütfen tekrar deneyin.');
+      }
+      btn.textContent = 'Üye Ol';
+      btn.disabled = false;
     });
 
-    function deleteMember(id) {
+    async function deleteMember(id) {
       if (!confirm('Bu üyeyi silmek istediğinize emin misiniz?')) return;
-      let members = getMembers();
-      members = members.filter(m => m.id !== id);
-      saveMembers(members);
+      await fetch(API, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_PASS },
+        body: JSON.stringify({ id })
+      });
       document.getElementById('row-' + id).remove();
       const countEl = document.querySelector('.admin-count strong');
       if (countEl) countEl.textContent = parseInt(countEl.textContent) - 1;
     }
 
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const btn = this.querySelector('.btn');
       if (this.email.value.trim() !== ADMIN_EMAIL || this.sifre.value.trim() !== ADMIN_PASS) {
@@ -122,17 +126,26 @@
       btn.textContent = 'Yükleniyor...';
       btn.disabled = true;
 
-      const members = getMembers();
-      const container = document.querySelector('.auth-container');
-      let html = '<div class="admin-panel"><h3>Üye Kayıtları</h3><p class="admin-count">Toplam üye sayısı: <strong>' + members.length + '</strong></p><div class="admin-table-wrap"><table><thead><tr><th>Tarih</th><th>Ad</th><th>Soyad</th><th>E-posta</th><th>Telefon</th><th>İşlem</th></tr></thead><tbody>';
-      members.forEach(m => {
-        html += '<tr id="row-' + m.id + '">';
-        html += '<td>' + m.tarih + '</td><td>' + m.ad + '</td><td>' + m.soyad + '</td><td>' + m.email + '</td><td>' + m.telefon + '</td>';
-        html += '<td><button class="btn-delete" onclick="deleteMember(\'' + m.id + '\')">Sil</button></td>';
-        html += '</tr>';
-      });
-      html += '</tbody></table></div><button class="btn" onclick="location.reload()">Çıkış Yap</button></div>';
-      container.innerHTML = html;
+      try {
+        const res = await fetch(API, {
+          headers: { 'x-admin-secret': ADMIN_PASS }
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error('Unauthorized');
+
+        const members = json.data;
+        const container = document.querySelector('.auth-container');
+        let html = '<div class="admin-panel"><h3>Üye Kayıtları</h3><p class="admin-count">Toplam üye sayısı: <strong>' + members.length + '</strong></p><div class="admin-table-wrap"><table><thead><tr><th>Tarih</th><th>Ad</th><th>Soyad</th><th>E-posta</th><th>Telefon</th><th>İşlem</th></tr></thead><tbody>';
+        members.forEach(m => {
+          html += '<tr id="row-' + m.id + '"><td>' + m.tarih + '</td><td>' + m.ad + '</td><td>' + m.soyad + '</td><td>' + m.email + '</td><td>' + m.telefon + '</td><td><button class="btn-delete" onclick="deleteMember(\'' + m.id + '\')">Sil</button></td></tr>';
+        });
+        html += '</tbody></table></div><button class="btn" onclick="location.reload()">Çıkış Yap</button></div>';
+        container.innerHTML = html;
+      } catch(err) {
+        alert('Veri alınamadı: ' + err.message);
+        btn.textContent = 'Giriş Yap';
+        btn.disabled = false;
+      }
     });
   </script>
 </body>
